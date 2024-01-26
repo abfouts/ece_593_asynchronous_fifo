@@ -1,0 +1,14 @@
+//////////////////////////////////////////////////////////////////////////
+//  Module:         sim_async_fifo_tb.sv
+//  Description:    Test bench for the asynchronous fifo DUT and model
+//
+//  Authors:        Abram Fouts, Yunus Syed
+//  Date:           01/25/2024
+//  
+//  Revision:       1.0 
+//////////////////////////////////////////////////////////////////////////
+
+module top;
+
+endmodule
+
