@@ -10,5 +10,32 @@
 
 module top;
 
+async_fifo fifo_model;
+
+fifo_model.w_en = 1;
+
+if input == output begin
+  pass = 1'b1;
+end
+
+// TODO: Delete pseudo code
+//$display({"async_1: Input: %0h, Input: %0h", input[332:0], output[332:0]);
+  
+
+
 endmodule
 
+function bit compare(input in[], input out[]);
+  bit pass; // 1: pass / 0: fail
+
+  if (in == out) begin
+    pass = 1'b1;
+  end
+  else begin
+    pass = 1'b0;
+  end
+  
+   
+
+  return 1'b1;
+endfunction

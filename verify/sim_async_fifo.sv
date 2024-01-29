@@ -14,7 +14,28 @@ package
 // Import anything useful here
 
 class async_fifo;
+  logic wr_en;
+  logic rd_en;
 
+
+
+  funtion run();
+    fork
+      // Verification tasks
+      compare_input();
+      compare_input1();
+      compare_input2();
+    join_none
+
+  endfunction
 endclass
+
+task compare_input();
+  forever begin
+    @(posedge w_en); 
+    $display("");
+  end
+endtask
+
 
 endpackage

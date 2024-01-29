@@ -11,34 +11,36 @@
 
 
 module async_fifo #(
-    DATA_WIDTH = 8;
+  DATA_WIDTH = 8;
+  DATA_DEPTH = 333;
 )(
-    // Inputs
-    input logic [DATA_WIDTH-1:0] data_in,
-    input write, 
-    input read,
+  // Inputs
+  input logic [DATA_WIDTH-1:0] data_in,
+  input write, 
+  input read,
 
-    // Outputs
-    output logic [DATA_WIDTH-1:0] data_out,
-    output logic full,
-    output logic empty
+  // Outputs
+  output logic [DATA_WIDTH-1:0] data_out,
+  output logic full,
+  output logic empty
 );
 
 //TODO: Add a memory block from the specification to write the data to
 //      and read the data from
 
-    //---------------------------
-    // Always block for writes
-    //---------------------------
-    always_comb begin
-     
-    end
+  logic [DATA_WIDTH-1:0] memory [DATA_DEPTH-1:0];
+  //---------------------------
+  // Always block for writes
+  //---------------------------
+  always_comb begin
+   
+  end
 
-    //---------------------------
-    // Always block for reads 
-    //---------------------------
-    always_comb begin
-     
-    end
+  //---------------------------
+  // Always block for reads 
+  //---------------------------
+  always_comb begin
+   
+  end
 
 endmodule
