@@ -1,11 +1,12 @@
 # File list for RTL and Simulation
 
 # RTL
-+incdir+../src/
-../src/async_fifo.sv
+#+incdir+../src/
+#../src/async_fifo.sv
 
 # Sim
 +incdir+../verify/
-../verify/sim_async_fifo.sv
+../verify/ccd_if.sv
+../verify/sim_ccd.sv
 ../verify/sim_async_fifo_tb.sv
 

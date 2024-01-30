@@ -7,21 +7,67 @@
 //  
 //  Revision:       1.0 
 //////////////////////////////////////////////////////////////////////////
+`timescale 1ps/1ps
+
+import ccd_pkg::*;
 
 module top;
 
-async_fifo fifo_model;
+// Test signals / variables
+localparam time producer_clk = 2ns; // Producer clock of 500MHz or 2nS cycle
+localparam time consumer_clk = 4.44ns; // Consumer clock of 225 MHz or 4.44nS cycle
+logic prod_clk = 1'b0;
+logic con_clk = 1'b0;
 
-fifo_model.w_en = 1;
+// Model Creation for the Producer and Consumner
+ccd producer;
+ccd consumer;
+ccd_if producer_if();
+ccd_if consumer_if();
 
-if input == output begin
-  pass = 1'b1;
+// Interface Assignment statements
+assign producer_if.CLK = prod_clk;
+assign consumer_if.CLK = con_clk;
+
+// Clocks generation for producer with 50% duty cycle
+initial begin
+  forever begin
+    prod_clk = ~prod_clk;
+    #(producer_clk/2);  // Create a period 
+  end
 end
 
-// TODO: Delete pseudo code
-//$display({"async_1: Input: %0h, Input: %0h", input[332:0], output[332:0]);
+// Clocks generation for producer with 50% duty cycle
+initial begin
+  forever begin
+    con_clk = ~con_clk;
+    #(consumer_clk/2);  // Create a period 
+  end
+end
+
+initial begin
+  // Create producer and consumer objects
+  producer = new();
+  consumer = new();
+  producer.device_if = producer_if;
+  consumer.device_if = producer_if;
+
+  // Initialize needed values for producer and consumer
+
+ 
+
+
+//  for(int i = 0; i < 333; i++) begin
+//    $display("Int::%0d -- Binary:%9b -- Gray:%9b", i, i, ((i >> 1)^i)); 
+//  end
+
+
+  $stop(2);
+end
+
   
 
+// TODO: Add DUT here 
 
 endmodule
 
