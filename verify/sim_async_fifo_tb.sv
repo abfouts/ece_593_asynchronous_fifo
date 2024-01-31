@@ -20,14 +20,12 @@ logic prod_clk = 1'b0;
 logic con_clk = 1'b0;
 
 // Model Creation for the Producer and Consumner
-ccd producer;
-ccd consumer;
-ccd_if producer_if();
-ccd_if consumer_if();
+ccd ex_ccd;
+ccd_if ex_ccd_if();
 
 // Interface Assignment statements
-assign producer_if.CLK = prod_clk;
-assign consumer_if.CLK = con_clk;
+assign ex_ccd_if.PROD_CLK = prod_clk;
+assign ex_ccd_if.CON_CLK = con_clk;
 
 // Clocks generation for producer with 50% duty cycle
 initial begin
@@ -47,19 +45,15 @@ end
 
 initial begin
   // Create producer and consumer objects
-  producer = new();
-  consumer = new();
-  producer.device_if = producer_if;
-  consumer.device_if = producer_if;
+  ex_ccd = new();
+  ex_ccd.device_if = ex_ccd_if;
 
   // Initialize needed values for producer and consumer
 
  
+  // TODO: Add tests here
 
 
-//  for(int i = 0; i < 333; i++) begin
-//    $display("Int::%0d -- Binary:%9b -- Gray:%9b", i, i, ((i >> 1)^i)); 
-//  end
 
 
   $stop(2);
@@ -70,18 +64,3 @@ end
 // TODO: Add DUT here 
 
 endmodule
-
-function bit compare(input in[], input out[]);
-  bit pass; // 1: pass / 0: fail
-
-  if (in == out) begin
-    pass = 1'b1;
-  end
-  else begin
-    pass = 1'b0;
-  end
-  
-   
-
-  return 1'b1;
-endfunction

@@ -13,15 +13,16 @@
 
 interface ccd_if #(parameter DATA_WIDTH = 8) ();
   // Timing
-  logic CLK;
+  logic PROD_CLK;
+  logic CON_CLK;
   // Data Logic
-  logic [DATA_WIDTH-1:0] O_DATA;
-  logic [DATA_WIDTH-1:0] I_DATA;
+  logic O_DATA [DATA_WIDTH-1:0];
+  logic I_DATA [DATA_WIDTH-1:0];
   // Write / Read
-  logic W_EN;
-  logic R_EN;
+  logic O_WR_EN;
+  logic O_RD_EN;
   // Full / Empty
-  logic FULL;
-  logic EMPTY;
+  logic I_FULL;
+  logic I_EMPTY;
 endinterface
 
