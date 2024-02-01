@@ -11,13 +11,13 @@
 //  Revision:       1.0 
 //////////////////////////////////////////////////////////////////////////
 
-interface ccd_if #(parameter DATA_WIDTH = 8) ();
+interface ccd_if #(parameter P_DATA_WIDTH = 8) ();
   // Timing
   logic PROD_CLK;
   logic CON_CLK;
   // Data Logic
-  logic O_DATA [DATA_WIDTH-1:0];
-  logic I_DATA [DATA_WIDTH-1:0];
+  logic [P_DATA_WIDTH-1:0] O_DATA ;
+  logic [P_DATA_WIDTH-1:0] I_DATA ;
   // Write / Read
   logic O_WR_EN;
   logic O_RD_EN;

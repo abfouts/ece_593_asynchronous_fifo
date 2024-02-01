@@ -17,7 +17,7 @@ package ccd_pkg;
 // Import anything useful here
 
 // Parameterized to use the same parameter within everything
-class ccd #(parameter int DATA_WIDTH = 8, parameter int MAX_BURST = 1024);
+class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   // Number of idle cycles
   int wr_idle;
   int rd_idle;
@@ -63,7 +63,7 @@ class ccd #(parameter int DATA_WIDTH = 8, parameter int MAX_BURST = 1024);
   //                cycles will write or read when data comes in or goes
   //                out. Utilizing wait() if the empty or full occurs 
   //----------------------------------------------------------------------
-  task start(int num_writes, logic data[MAX_BURST-1:0][DATA_WIDTH-1:0]);
+  task start(int num_writes, logic [P_DATA_WIDTH-1:0] data [P_MAX_BURST-1:0]);
     $display("Transaction Started");
 
     fork
@@ -71,8 +71,8 @@ class ccd #(parameter int DATA_WIDTH = 8, parameter int MAX_BURST = 1024);
       fork
         for(int i = 0; i < num_writes; i++) begin
           // Error checking for requirements
-          if (i >= MAX_BURST) begin
-            $error("Exceding burst limitations, Actual: %0d -- Expected Max: %0d -- Time:%0t", num_writes, MAX_BURST, $time);
+          if (i >= P_MAX_BURST) begin
+            $error("Exceding burst limitations, Actual: %0d -- Expected Max: %0d -- Time:%0t", num_writes, P_MAX_BURST, $time);
           end
 
           // Is the does data exist?
@@ -107,9 +107,9 @@ class ccd #(parameter int DATA_WIDTH = 8, parameter int MAX_BURST = 1024);
   //
   //  Description: writes to the FIFO 
   //----------------------------------------------------------------------
-  protected task write(logic data[DATA_WIDTH-1:0]);
+  protected task write(logic [P_DATA_WIDTH-1:0] data);
     // Interfacing Actions
-    device_if.I_DATA[DATA_WIDTH-1:0] = data;  
+    device_if.I_DATA = data;  
 
     // Wait if the device is full
     wait(device_if.I_FULL == 1'b0);
@@ -128,9 +128,9 @@ class ccd #(parameter int DATA_WIDTH = 8, parameter int MAX_BURST = 1024);
   //  Description: reads from the FIFO 
   //----------------------------------------------------------------------
   protected task read();
-    logic data [DATA_WIDTH-1:0];
+    logic [P_DATA_WIDTH-1:0] data ;
     // Interfacing Actions
-    data = device_if.O_DATA[DATA_WIDTH-1:0];
+    data = device_if.O_DATA;
 
     // Wait if the device is full
     wait(device_if.I_EMPTY == 1'b0);
@@ -152,8 +152,8 @@ class ccd #(parameter int DATA_WIDTH = 8, parameter int MAX_BURST = 1024);
   //                is a match, or if the data is a mismatch 
   //----------------------------------------------------------------------
   task compare_mb();
-    logic [DATA_WIDTH-1:0] d_in;
-    logic [DATA_WIDTH-1:0] d_out;
+    logic [P_DATA_WIDTH-1:0] d_in;
+    logic [P_DATA_WIDTH-1:0] d_out;
 
     forever begin
       data_in_mb.get(d_in); // Blocking, so will not continue until it receives an item 
