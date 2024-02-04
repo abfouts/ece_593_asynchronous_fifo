@@ -11,29 +11,27 @@
 
 
 module async_fifo #(
-  DATA_WIDTH = 8,
-  MEM_DEPTH = 333
+  P_DATA_WIDTH = 8,
+  P_MEM_DEPTH = 333
 )(
   // Inputs
   input logic RST_n,
-  input logic [DATA_WIDTH-1:0] DATA_IN,
+  input logic [P_DATA_WIDTH-1:0] DATA_IN,
   input W_EN, 
   input R_EN,
 
   // Outputs
-  output logic [DATA_WIDTH-1:0] DATA_OUT,
+  output logic [P_DATA_WIDTH-1:0] DATA_OUT,
   output logic FULL = 0,
   output logic EMPTY = 1
 );
 
 integer wr_ptr = 0;
 integer rd_ptr = 0;
-//logic [$clog2(MEM_DEPTH)] wr_ptr = '0;
-//logic [$clog2(MEM_DEPTH)] rd_ptr = '0;
 bit wrapped_mem = 1'b0;
 
 // Memory
-logic [DATA_WIDTH-1:0] memory [MEM_DEPTH-1:0];
+logic [P_DATA_WIDTH-1:0] memory [P_MEM_DEPTH-1:0];
 
   //---------------------------
   // Always block for writes
@@ -50,7 +48,7 @@ logic [DATA_WIDTH-1:0] memory [MEM_DEPTH-1:0];
     else begin
       if (W_EN && !FULL) begin
         memory[wr_ptr] = DATA_IN;
-        wr_ptr = (wr_ptr + 1'b1) % MEM_DEPTH;
+        wr_ptr = (wr_ptr + 1'b1) % P_MEM_DEPTH;
       end
     end
   end
@@ -67,7 +65,7 @@ logic [DATA_WIDTH-1:0] memory [MEM_DEPTH-1:0];
     else begin
       if (R_EN && !EMPTY) begin
         DATA_OUT = memory[rd_ptr];
-        rd_ptr = (rd_ptr + 1'b1) % MEM_DEPTH;
+        rd_ptr = (rd_ptr + 1'b1) % P_MEM_DEPTH;
       end 
     end
   end

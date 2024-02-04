@@ -45,8 +45,8 @@ ccd_if  #(.P_DATA_WIDTH(`DATA_WIDTH)) ccd_inst_if();
 //);
 
 async_fifo #(
-  .DATA_WIDTH(`DATA_WIDTH),
-  .MEM_DEPTH(`MEM_DEPTH)
+  .P_DATA_WIDTH(`DATA_WIDTH),
+  .P_MEM_DEPTH(`MEM_DEPTH)
 ) dut (
   // Inputs
   .RST_n(ccd_inst_if.RST_n),
@@ -109,10 +109,6 @@ initial begin
 
 
   $stop(2);
+  $finish;
 end
-
-  
-
-// TODO: Add DUT here 
-
 endmodule
