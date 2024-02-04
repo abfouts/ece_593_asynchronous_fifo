@@ -29,6 +29,37 @@ logic [`DATA_WIDTH-1:0] data [`MAX_BURST-1:0];
 ccd     #(.P_DATA_WIDTH(`DATA_WIDTH), .P_MAX_BURST(`MAX_BURST)) ccd_inst;
 ccd_if  #(.P_DATA_WIDTH(`DATA_WIDTH)) ccd_inst_if();
 
+//DUT Instantiation
+//async_fifo #(.DATA_WIDTH(`DATA_WIDTH), .MEM_DEPTH(`MEM_DEPTH)) 
+//dut (
+//  .W_CLK(ccd_inst_if.PROD_CLK),
+//  .R_CLK(ccd_inst_if.CON_CLK),
+//  .WRST_n(1'b1),
+//  .RRST_n(1'b1),
+//  .W_EN(ccd_inst_if.O_WR_EN),
+//  .R_EN(ccd_inst_if.O_RD_EN),
+//  .I_DATA(ccd_inst_if.I_DATA),
+//  .O_DATA(ccd_inst_if.O_DATA),
+//  .FULL(ccd_inst_if.I_FULL),
+//  .EMPTY(ccd_inst_if.I_EMPTY)
+//);
+
+async_fifo #(
+  .DATA_WIDTH(`DATA_WIDTH),
+  .MEM_DEPTH(`MEM_DEPTH)
+) dut (
+  // Inputs
+  .RST_n(ccd_inst_if.RST_n),
+  .DATA_IN(ccd_inst_if.I_DATA),
+  .W_EN(ccd_inst_if.O_WR_EN), 
+  .R_EN(ccd_inst_if.O_RD_EN),
+
+  // Outputs
+  .DATA_OUT(ccd_inst_if.O_DATA),
+  .FULL(ccd_inst_if.I_FULL),
+  .EMPTY(ccd_inst_if.I_EMPTY)
+);
+
 // Interface Assignment statements
 assign ccd_inst_if.PROD_CLK = prod_clk;
 assign ccd_inst_if.CON_CLK = con_clk;
@@ -55,8 +86,13 @@ initial begin
   ccd_inst.device_if = ccd_inst_if;
   ccd_inst.wr_idle = 2;
   ccd_inst.rd_idle = 1;
-  ccd_inst_if.I_FULL = 0;
-  ccd_inst_if.I_EMPTY = 0;
+
+  ccd_inst_if.RST_n = 0;
+  #100ns;
+  ccd_inst_if.RST_n = 1;
+  
+  //ccd_inst_if.I_FULL = 0;
+  //ccd_inst_if.I_EMPTY = 0;
 
   // Initialize needed values for producer and consumer
   data[0] = 8'h01;

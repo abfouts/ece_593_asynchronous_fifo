@@ -11,36 +11,110 @@
 
 
 module async_fifo #(
-  DATA_WIDTH = 8;
-  DATA_DEPTH = 333;
+  DATA_WIDTH = 8,
+  MEM_DEPTH = 333
 )(
   // Inputs
-  input logic [DATA_WIDTH-1:0] data_in,
-  input write, 
-  input read,
+  input logic RST_n,
+  input logic [DATA_WIDTH-1:0] DATA_IN,
+  input W_EN, 
+  input R_EN,
 
   // Outputs
-  output logic [DATA_WIDTH-1:0] data_out,
-  output logic full,
-  output logic empty
+  output logic [DATA_WIDTH-1:0] DATA_OUT,
+  output logic FULL = 0,
+  output logic EMPTY = 1
 );
 
-//TODO: Add a memory block from the specification to write the data to
-//      and read the data from
+integer wr_ptr = 0;
+integer rd_ptr = 0;
+//logic [$clog2(MEM_DEPTH)] wr_ptr = '0;
+//logic [$clog2(MEM_DEPTH)] rd_ptr = '0;
+bit wrapped_mem = 1'b0;
 
-  logic [DATA_WIDTH-1:0] memory [DATA_DEPTH-1:0];
+// Memory
+logic [DATA_WIDTH-1:0] memory [MEM_DEPTH-1:0];
+
   //---------------------------
   // Always block for writes
   //---------------------------
-  always_comb begin
-   
+  //always_comb begin
+  always @(posedge W_EN or negedge RST_n) begin 
+    if (RST_n == 1'b0) begin
+      foreach (memory[i]) begin
+        memory[i] = 8'h00;
+      end 
+      wr_ptr = '0;
+
+    end
+    else begin
+      if (W_EN && !FULL) begin
+        memory[wr_ptr] = DATA_IN;
+        wr_ptr = (wr_ptr + 1'b1) % MEM_DEPTH;
+      end
+    end
   end
 
   //---------------------------
-  // Always block for reads 
+  // Always block for reads
+  //---------------------------
+ //` always_comb begin
+  always @(posedge R_EN or negedge RST_n) begin 
+    if (RST_n == 1'b0) begin
+      DATA_OUT = 'z;
+      rd_ptr = '0;
+    end
+    else begin
+      if (R_EN && !EMPTY) begin
+        DATA_OUT = memory[rd_ptr];
+        rd_ptr = (rd_ptr + 1'b1) % MEM_DEPTH;
+      end 
+    end
+  end
+
+  //---------------------------
+  // Always block for wrapped control 
+  //---------------------------
+  always_latch begin
+    if (RST_n == 1'b0) begin
+      wrapped_mem = 1'b0;
+    end 
+    else begin
+      if (wr_ptr == 0) begin
+        wrapped_mem = 1'b1;
+      end
+
+      if (rd_ptr == 0) begin
+        wrapped_mem = 1'b0;
+      end
+    end
+  end
+
+
+  //---------------------------
+  // FULL / EMPTY Handles
   //---------------------------
   always_comb begin
-   
+    if (RST_n == 1'b0) begin
+      FULL = 1'b0;
+      EMPTY = 1'b1;
+    end
+    else begin
+      if (rd_ptr == wr_ptr) begin
+        if (wrapped_mem) begin
+          FULL = 1'b1;
+          EMPTY = 1'b0;
+        end   
+        else begin
+          FULL = 1'b0;
+          EMPTY = 1'b1;
+        end
+      end
+      else begin
+        FULL = 1'b0;
+        EMPTY = 1'b0;
+      end 
+    end
   end
 
 endmodule

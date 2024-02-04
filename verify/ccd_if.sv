@@ -15,6 +15,7 @@ interface ccd_if #(parameter P_DATA_WIDTH = 8) ();
   // Timing
   logic PROD_CLK;
   logic CON_CLK;
+  logic RST_n;
   // Data Logic
   logic [P_DATA_WIDTH-1:0] O_DATA ;
   logic [P_DATA_WIDTH-1:0] I_DATA ;

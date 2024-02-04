@@ -16,10 +16,10 @@ always_ff@(posedge W_CLK or negedge W_EN) begin
 
 	if (W_EN && !FULL) begin
 
-		 mem[B_WPTR[PTR_WIDTH-1:0]]<=I_DATA;
+		 mem[B_WPTR][PTR_WIDTH-1:0] <= I_DATA;
 	end
 end
 
-assign O_DATA <= mem[B_RPTR[PTR_WIDTH-1:0]];
+assign O_DATA = mem[B_RPTR][PTR_WIDTH-1:0];
 
 endmodule
