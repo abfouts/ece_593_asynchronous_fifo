@@ -1,23 +1,25 @@
-module synchronizer #(parameter DATA_WIDTH=8)
-(
-input logic CLK, RST_n, 
-input logic  [DATA_WIDTH-1:0] DATA_I,
-output logic [DATA_WIDTH-1:0] DATA_O
-);
-logic [DATA_WIDTH-1:0] d1,d2;
+module synchronizer (PTR_SYNC, CLK, RST_N, PTR);
+parameter data_width = 10;
+
+input bit CLK, RST_N;
+input logic[data_width-1:0] PTR;
+output logic [data_width-1:0] PTR_SYNC;
+
+logic [data_width-1:0] REG_PTR1, REG_PTR2;
 
 always_ff@(posedge CLK) begin
-	if (!RST_n) begin
-		d1 <= '0;
-		d2 <= '0;
-	end
+	if(!RST_N)
+	  begin
+		REG_PTR1 <= '0;
+		REG_PTR2 <= '0;
+	  end
 	else
-		begin
-			d1 <= DATA_I;
-			d2 <= d1;
-		end
-	end
-	
-assign DATA_O = d2;
-			
+	  begin
+		REG_PTR1 <= PTR;
+		REG_PTR2 <= REG_PTR1;
+	  end
+end
+
+assign PTR_SYNC = REG_PTR2;
+
 endmodule
