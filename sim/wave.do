@@ -16,7 +16,7 @@ add wave -noupdate -expand -group ASYNC_FIFO /top/dut/R_EN
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/DATA_OUT
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/FULL
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/EMPTY
-TreeUpdate [SetDefaultTree]
+
 WaveRestoreCursors {{Cursor 1} {9061608 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150

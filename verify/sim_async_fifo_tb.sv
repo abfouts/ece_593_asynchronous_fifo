@@ -15,7 +15,6 @@
 import ccd_pkg::*;
 
 module top;
-
 // Test signals / variables
 localparam time producer_clk = 2ns; // Producer clock of 500MHz or 2nS cycle
 localparam time consumer_clk = 4.44ns; // Consumer clock of 225 MHz or 4.44nS cycle
@@ -23,7 +22,10 @@ logic prod_clk = 1'b0;
 logic con_clk = 1'b0;
 
 // Testing
-logic [`DATA_WIDTH-1:0] data [`MAX_BURST-1:0];
+enum bit[1:0] {D_ZERO = 2'b00, D_ONE = 2'b11, D_RAND = 2'b01} STIMULUS;
+
+//logic [`DATA_WIDTH-1:0] data [`MAX_BURST-1:0];
+
 
 // Model Creation for the Producer and Consumner
 ccd     #(.P_DATA_WIDTH(`DATA_WIDTH), .P_MAX_BURST(`MAX_BURST)) ccd_inst;
@@ -87,25 +89,21 @@ initial begin
   ccd_inst.wr_idle = 2;
   ccd_inst.rd_idle = 1;
 
+  // Kicks off scoreboard
+  ccd_inst.run();
+
   ccd_inst_if.RST_n = 0;
   #100ns;
   ccd_inst_if.RST_n = 1;
+  #100ns;
   
-  //ccd_inst_if.I_FULL = 0;
-  //ccd_inst_if.I_EMPTY = 0;
-
-  // Initialize needed values for producer and consumer
-  data[0] = 8'h01;
-  for(int i = 0; i < `MAX_BURST; i++) begin
-    data[i] = data[0] * i+1;
+  // Send max burst random data
+  repeat(30) begin
+    ccd_inst.start(`MAX_BURST, ccd_inst.get_data(`MAX_BURST, D_RAND));
   end
-
-  ccd_inst.start(`MAX_BURST, data);
  
   // TODO: Add tests here
   
-
-
 
 
   $stop(2);

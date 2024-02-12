@@ -29,6 +29,9 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   // Mailbox for comparison
   protected mailbox data_in_mb;
   protected mailbox data_out_mb;
+  protected rand bit [P_DATA_WIDTH-1:0] randdata;
+
+  typedef logic [P_DATA_WIDTH-1:0] data_t [];
 
   // New override to initialize the mailboxes to an infinite size (dynamic)
   function new();
@@ -63,7 +66,7 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   //                cycles will write or read when data comes in or goes
   //                out. Utilizing wait() if the empty or full occurs 
   //----------------------------------------------------------------------
-  task start(int num_writes, logic [P_DATA_WIDTH-1:0] data [P_MAX_BURST-1:0]);
+  task start(int num_writes, logic [P_DATA_WIDTH-1:0] data []);
     $display("Transaction Started");
 
     fork
@@ -107,7 +110,9 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   //
   //  Description: writes to the FIFO 
   //----------------------------------------------------------------------
-  protected task write(logic [P_DATA_WIDTH-1:0] data);
+  task write(logic [P_DATA_WIDTH-1:0] data);
+    $display("[DRIVER]: Writing data 0x%0x", data);
+
     // Interfacing Actions
     device_if.I_DATA = data;  
 
@@ -127,20 +132,16 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   //
   //  Description: reads from the FIFO 
   //----------------------------------------------------------------------
-  protected task read();
-    logic [P_DATA_WIDTH-1:0] data ;
-    // Interfacing Actions
-    data = device_if.O_DATA;
-
+  task read();
     // Wait if the device is full
     wait(device_if.I_EMPTY == 1'b0);
     device_if.O_RD_EN = 1'b1;
     
-    data_out_mb.put(data); // Place in MB
 
     // Strobing RD EN
     @(negedge device_if.CON_CLK);
     device_if.O_RD_EN = 1'b0;
+    data_out_mb.put(device_if.O_DATA); // Place in MB
   endtask
 
   //----------------------------------------------------------------------
@@ -156,6 +157,7 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
     logic [P_DATA_WIDTH-1:0] d_out;
 
     forever begin
+
       data_in_mb.get(d_in); // Blocking, so will not continue until it receives an item 
       data_out_mb.get(d_out); // Blocking, so will not continue until it receives an item 
 
@@ -167,6 +169,44 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
       end
     end
   endtask
+
+  //----------------------------------------------------------------------
+  //  Name: get_data(int num, bit [1:0] rand_type) 
+  //
+  //  Description:  Gets random data for testing
+  //                Contains num, data entries that will be written  
+  //                The type of random data can be forced with rand_type
+  //                0 - all 0's
+  //                1 - all 1's
+  //                2/3 - random 
+  //----------------------------------------------------------------------
+  function data_t get_data(int num, logic [1:0] rand_type);
+    logic [P_DATA_WIDTH-1:0] data [];
+     
+    if (num > P_MAX_BURST) begin
+      $error("Cannot request more than the max number of burst data entries");
+      //return -1;
+    end
+
+    data = new[num];
+
+    $display("[GENERATOR]: Creating %0d FIFO Data Entries", num);
+
+    for(int i = 0; i < num; i++) begin
+      void'(this.randomize());      
+      if (rand_type == '0) begin
+        data[i] = '0; 
+      end
+      else if (rand_type == '1) begin
+        data[i] = '1; 
+      end 
+      else begin
+        data[i] = randdata; 
+      end 
+    end 
+
+    return data;
+  endfunction
 
 endclass
 endpackage
