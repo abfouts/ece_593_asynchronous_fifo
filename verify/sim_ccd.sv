@@ -30,8 +30,13 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   protected mailbox data_in_mb;
   protected mailbox data_out_mb;
   protected rand bit [P_DATA_WIDTH-1:0] randdata;
+  protected rand logic [1:0] rand_type;
+
 
   typedef logic [P_DATA_WIDTH-1:0] data_t [];
+  rand int num_entries; 
+  constraint c_num_entries {  0 < num_entries;
+                              num_entries <= P_MAX_BURST; }
 
   // New override to initialize the mailboxes to an infinite size (dynamic)
   function new();
@@ -75,13 +80,13 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
         for(int i = 0; i < num_writes; i++) begin
           // Error checking for requirements
           if (i >= P_MAX_BURST) begin
-            $error("Exceding burst limitations, Actual: %0d -- Expected Max: %0d -- Time:%0t", num_writes, P_MAX_BURST, $time);
+            $error("[DRIVER]: Exceding burst limitations, Actual: %0d -- Expected Max: %0d -- Time:%0t", num_writes, P_MAX_BURST, $time);
           end
 
           // Is the does data exist?
           // TODO: Verify size
           if ($size(data) < i) begin
-            $error("Attempting to write no data, index: %0d -- Time:%0t", i, $time);
+            $error("[DRIVER]: Attempting to write no data, index: %0d -- Time:%0t", i, $time);
           end
 
           for(int j = 0; j < wr_idle+1; j++) begin // Idle cylce + 1 is the current cycle to write 
@@ -162,16 +167,16 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
       data_out_mb.get(d_out); // Blocking, so will not continue until it receives an item 
 
       if (d_in == d_out) begin
-        $display("Data In: %0x -- Data Out: %0x -- MATCH -- time %0t", d_in, d_out, $time);
+        $display("[SCOREBOARD]: Data In: %0x -- Data Out: %0x -- MATCH -- time %0t", d_in, d_out, $time);
       end else begin
-        $display("Data In: %0x -- Data Out: %0x -- NO MATCH -- time %0t", d_in, d_out, $time);
+        $display("[SCOREBOARD]: Data In: %0x -- Data Out: %0x -- NO MATCH -- time %0t", d_in, d_out, $time);
         $stop;
       end
     end
   endtask
 
   //----------------------------------------------------------------------
-  //  Name: get_data(int num, bit [1:0] rand_type) 
+  //  Name: get_rand_data() 
   //
   //  Description:  Gets random data for testing
   //                Contains num, data entries that will be written  
@@ -180,19 +185,29 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
   //                1 - all 1's
   //                2/3 - random 
   //----------------------------------------------------------------------
-  function data_t get_data(int num, logic [1:0] rand_type);
+  function data_t get_rand_data();
     logic [P_DATA_WIDTH-1:0] data [];
+
+    void'(this.randomize());      
+    this.randdata.rand_mode(1);
+    this.num_entries.rand_mode(1);
+    if (randdata == '1) begin
+      num_entries = P_MAX_BURST; 
+    end 
+    this.num_entries.rand_mode(0);
+    
+
      
-    if (num > P_MAX_BURST) begin
-      $error("Cannot request more than the max number of burst data entries");
+    if (num_entries > P_MAX_BURST) begin
+      $error("[GENERATOR]: Cannot request more than the max number of burst data entries");
       //return -1;
     end
 
-    data = new[num];
+    data = new[num_entries];
 
-    $display("[GENERATOR]: Creating %0d FIFO Data Entries", num);
+    $display("[GENERATOR]: Creating %0d FIFO Data Entries", num_entries);
 
-    for(int i = 0; i < num; i++) begin
+    for(int i = 0; i < num_entries; i++) begin
       void'(this.randomize());      
       if (rand_type == '0) begin
         data[i] = '0; 
@@ -204,6 +219,8 @@ class ccd #(parameter int P_DATA_WIDTH = 8, parameter int P_MAX_BURST = 1024);
         data[i] = randdata; 
       end 
     end 
+
+    this.randdata.rand_mode(0);
 
     return data;
   endfunction

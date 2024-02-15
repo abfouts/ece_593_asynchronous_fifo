@@ -6,8 +6,8 @@ PROJ_HOME = ../
 make:
 	rm -rf work
 	vlib work
-	vlog -sv -f manifest.f
-	vsim -gui -do run.do -classdebug -voptargs="+acc" -uvmcontrol=all -msgmode both -displaymsgmode both work.top -wlf $(PROJ_NAME).wlf &
+	vlog -sv -64 -cover bcse -f manifest.f
+	vsim -gui -do run.do -classdebug -coverage -voptargs="+acc" -uvmcontrol=all -msgmode both -displaymsgmode both work.top -wlf $(PROJ_NAME).wlf &
 
 #Clean is ran automatically performed on 'make' to limit simulator issues
 clean:
