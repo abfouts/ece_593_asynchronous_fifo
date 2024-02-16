@@ -1,0 +1,51 @@
+Test hierarchy
+  Abram Fouts
+
+ccd_pkg (clock crossing domain) contains the ccd class.
+
+Properties/Members
+  Write and read idle counters
+  Virtual CCD interface
+  Mailboxes for scoreboard
+  Randdata is random data that is used for stimulus
+  Rand_type is a 2 bit signal to decide if stimulus is all 1's, 0's, or random
+
+  run task
+    Calls the compare mailbox (scoreboard) task that will infinitely compare two mailbox items
+
+  Start task with arguments number of writes and data - which accepts a vector of P_DATA_WIDTH size
+    Starts a transaction, verifies the number of writes expected to make sure the burst write is not exceded
+    Forks a fork begin join, so write and read occur at the same exact time. Loops through the expected number of writes and uses the provided data. This waits for the idle + 1 of the 
+    corresponding clock cycles to write or read then calls the write or read task.
+
+  Write Task
+    Captures data provided by the argument
+    wait for the device to not be full
+    assert write enable
+    put data in the data in mailbox, but data on the RTL in data line and wait for the falling edge of the clock. 
+    deassert write enable
+
+  Read task
+    Waits for the fifo to not be empty
+    asserts read enable
+    negative edge of clock deassert the read enable signal
+    place output data in the mailbox
+
+  Get_rand_data function
+    get a random number of entries
+    if rand mode is 2'b11 use the max burst
+
+    Error checking
+
+    Loop through the number of the number of entries
+    use rand type to determine the stimulus to be all 1's, 0's, or random
+    Return a vector the the start task to use.
+
+////////////////////////////////////////
+Test Bench
+/////////////
+Create clocks, DUT, coverage, connections etc
+
+Loop 300 times generating random data and sending the vectors to the start command to write to the FIFO
+
+Finish
