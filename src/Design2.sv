@@ -1,10 +1,10 @@
-`include "FOFO_mem.sv"
-`include "Gray_2_binary.sv"
-`include "Binary_2_gray.sv"
-`include "Bin_counter.sv"
-`include "Synchronizer.sv"
-`include "Read_pointer_handler.sv"
-`include "Write_pointer_Handler.sv"
+`include "FIFO2_mem.sv"
+`include "G_2_b.sv"
+`include "bin_2_gray.sv"
+`include "binary_counter.sv"
+`include "synchronizer.sv"
+`include "R2_PTR_Handler.sv"
+`include "W2_PTR_Handler.sv"
 
 
 module Design2(FULL,EMPTY, I_DATA, W_CLK, WRST_n, O_DATA, W_EN, RRST_n, R_CLK, R_EN);
