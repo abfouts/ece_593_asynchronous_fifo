@@ -1,3 +1,12 @@
+`include "FOFO_mem.sv"
+`include "Gray_2_binary.sv"
+`include "Binary_2_gray.sv"
+`include "Bin_counter.sv"
+`include "Synchronizer.sv"
+`include "Read_pointer_handler.sv"
+`include "Write_pointer_Handler.sv"
+
+
 module Design2(FULL,EMPTY, I_DATA, W_CLK, WRST_n, O_DATA, W_EN, RRST_n, R_CLK, R_EN);
 parameter addr_width = 10;
 parameter data_width = 9;
