@@ -2,8 +2,8 @@ module Design2(FULL,EMPTY, I_DATA, W_CLK, WRST_n, O_DATA, W_EN, RRST_n, R_CLK, R
 parameter addr_width = 10;
 parameter data_width = 9;
 output logic FULL, EMPTY;
-input logic [data_width-1:0] I_DATA;
-output logic [data_width-1:0] O_DATA;
+input logic [data_width-1:0] O_DATA;
+output logic [data_width-1:0] I_DATA;
 input logic W_CLK, W_EN, WRST_n, R_CLK, R_EN, RRST_n;
 logic [addr_width:0] W_PTR,R_PTR;
 logic [addr_width:0] G_RPTR,G_WPTR;
