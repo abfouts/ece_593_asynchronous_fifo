@@ -13,6 +13,8 @@
 # Sim
 +incdir+../verify/
 ../verify/ccd_if.sv
-../verify/sim_ccd.sv
-../verify/sim_async_fifo_tb.sv
+##../verify/sim_ccd.sv
+##../verify/sim_async_fifo_tb.sv
+../verify/uvm/ccd_agent_pkg.sv
+../verify/uvm/top.sv
 
