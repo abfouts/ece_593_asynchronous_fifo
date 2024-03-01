@@ -33,9 +33,18 @@ class ccd_scoreboard extends uvm_scoreboard;
     msg = $sformatf("Scoreboard Received Transaction from Monitor: DATA IN: %0d -- DATA OUT:%0d", $size(txn.data_in), $size(txn.data_out));
     `uvm_info(get_name(), msg, UVM_LOW); 
     //TODO: Perform comparison here
-    if (txn.data_in.size() == txn.data_out()) begin
+    if (txn.data_in.size() == txn.data_out.size()) begin
       for(int i = 0; i < txn.data_in.size(); i++) begin
-
+        if (txn.data_in[i] == txn.data_out[i]) begin
+          msg = $sformatf("TEST TAG: tag0001 : DATA MATCHES: DATA IN: %0x -- DATA OUT:%0x -- PASS", (txn.data_in[i]), (txn.data_out[i]));
+          `uvm_info(get_type_name(), msg, UVM_LOG);
+        end 
+        else begin
+          msg = $sformatf("TEST TAG: tag0001 : DATA DOES NOT MATCH: DATA IN: %0x -- DATA OUT:%0x -- FAIL", (txn.data_in[i]), (txn.data_out[i]));
+          `uvm_info(get_type_name(), msg, UVM_LOG);
+          `uvm_error(get_type_name(), msg);
+          $stop;
+        end
       end
     end
     else begin

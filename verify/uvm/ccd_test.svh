@@ -9,9 +9,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 class ccd_test extends uvm_test;
-  //`uvm_component_utils(ccd_test);
-
-  `uvm_component_registry(ccd_test, "ccd_test");
+  `uvm_component_registry(ccd_test, "ccd_test");  // Register test with factory
 
   ccd_env ccd_env_h;
   ccd_config ccd_config_h;
@@ -34,22 +32,17 @@ class ccd_test extends uvm_test;
     reset_seq = ccd_base_sequence::type_id::create("reset_seq", this);
     reset_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
 
-    #100ns;
-
     repeat (10) begin
       rand_seq = ccd_rand_sequence::type_id::create("rand_seq", this);
       rand_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
-      //#100ns;
     end
 
     reset_seq = ccd_base_sequence::type_id::create("reset_seq", this);
     reset_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
-    //#100ns;
 
     repeat (10) begin
       rand_seq = ccd_rand_sequence::type_id::create("rand_seq", this);
       rand_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
-      //#100ns;
     end
 
 

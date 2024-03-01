@@ -43,20 +43,40 @@ logic read = 1'b0;
 
 always @(posedge PROD_CLK or negedge RST_n) begin
   if (RST_n == 1'b0) begin
-    write <= 0;
     wr_clk_cnt <= 0;
   end 
-  // WR Idle + 1
+  else if(W_EN) begin
+    wr_clk_cnt = ((wr_clk_cnt+1) % 3);
+  end
+  else begin
+    wr_clk_cnt <= 0;
+  end
+end
+
+always @(posedge CON_CLK or negedge RST_n) begin
+  if (RST_n == 1'b0) begin
+    rd_clk_cnt <= 0;
+  end 
+  else if (R_EN) begin
+    rd_clk_cnt = ((rd_clk_cnt + 1) % 2);
+  end
+  else begin
+    rd_clk_cnt <= 0;
+  end
+end
+
+always @(posedge PROD_CLK or negedge RST_n) begin
+  if (RST_n == 1'b0) begin
+    write <= 0;
+  end 
   if (wr_clk_cnt == 2) begin
     if (!FULL) begin
       if (W_EN) begin
         write <= 1'b1;
-        wr_clk_cnt <= 0;
       end
     end
   end 
   else begin
-    wr_clk_cnt++;
     write <= 1'b0;
   end
 end
@@ -64,19 +84,15 @@ end
 always @(posedge CON_CLK or negedge RST_n) begin
   if (RST_n == 1'b0) begin
     read <= 0;
-    rd_clk_cnt <= 0;
   end 
-  //if (R_EN) begin
   if (rd_clk_cnt == 1) begin
     if (!EMPTY) begin
       if (R_EN) begin
         read <= 1'b1;
-        rd_clk_cnt <= 1'b0;
       end
     end
   end 
   else begin
-    rd_clk_cnt++;
     read <= 1'b0;
   end 
 end
@@ -84,8 +100,6 @@ end
   //---------------------------
   // Always block for writes
   //---------------------------
-  //always_comb begin
-  //always @(posedge PROD_CLK or negedge RST_n) begin
   always @(posedge write or negedge RST_n) begin 
     if (RST_n == 1'b0) begin
       foreach (memory[i]) begin
@@ -105,9 +119,6 @@ end
   //---------------------------
   // Always block for reads
   //---------------------------
-  //always_comb begin
-  //always @(posedge CON_CLK or negedge RST_n) begin
-  //always @(posedge R_EN or negedge RST_n) begin 
   always @(posedge read or negedge RST_n) begin 
     if (RST_n == 1'b0) begin
       DATA_OUT = 'z;
@@ -120,8 +131,6 @@ end
       end 
     end
   end
-
-  //assign DATA_OUT = memory[rd_ptr];
 
   //---------------------------
   // Always block for wrapped control 
