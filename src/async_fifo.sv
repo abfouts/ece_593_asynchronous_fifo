@@ -15,6 +15,8 @@ module async_fifo #(
   P_MEM_DEPTH = 333
 )(
   // Inputs
+  input PROD_CLK,
+  input CON_CLK,
   input logic RST_n,
   input logic [P_DATA_WIDTH-1:0] DATA_IN,
   input W_EN, 
@@ -33,11 +35,58 @@ bit wrapped_mem = 1'b0;
 // Memory
 logic [P_DATA_WIDTH-1:0] memory [P_MEM_DEPTH-1:0];
 
+// Write/Read Logic
+integer wr_clk_cnt = 0;
+integer rd_clk_cnt = 0;
+logic write = 1'b0;
+logic read = 1'b0;
+
+always @(posedge PROD_CLK or negedge RST_n) begin
+  if (RST_n == 1'b0) begin
+    write <= 0;
+    wr_clk_cnt <= 0;
+  end 
+  // WR Idle + 1
+  if (wr_clk_cnt == 2) begin
+    if (!FULL) begin
+      if (W_EN) begin
+        write <= 1'b1;
+        wr_clk_cnt <= 0;
+      end
+    end
+  end 
+  else begin
+    wr_clk_cnt++;
+    write <= 1'b0;
+  end
+end
+
+always @(posedge CON_CLK or negedge RST_n) begin
+  if (RST_n == 1'b0) begin
+    read <= 0;
+    rd_clk_cnt <= 0;
+  end 
+  //if (R_EN) begin
+  if (rd_clk_cnt == 1) begin
+    if (!EMPTY) begin
+      if (R_EN) begin
+        read <= 1'b1;
+        rd_clk_cnt <= 1'b0;
+      end
+    end
+  end 
+  else begin
+    rd_clk_cnt++;
+    read <= 1'b0;
+  end 
+end
+
   //---------------------------
   // Always block for writes
   //---------------------------
   //always_comb begin
-  always @(posedge W_EN or negedge RST_n) begin 
+  //always @(posedge PROD_CLK or negedge RST_n) begin
+  always @(posedge write or negedge RST_n) begin 
     if (RST_n == 1'b0) begin
       foreach (memory[i]) begin
         memory[i] = 8'h00;
@@ -46,7 +95,7 @@ logic [P_DATA_WIDTH-1:0] memory [P_MEM_DEPTH-1:0];
 
     end
     else begin
-      if (W_EN && !FULL) begin
+      if (write && W_EN && !FULL) begin
         memory[wr_ptr] = DATA_IN;
         wr_ptr = (wr_ptr + 1'b1) % P_MEM_DEPTH;
       end
@@ -56,19 +105,23 @@ logic [P_DATA_WIDTH-1:0] memory [P_MEM_DEPTH-1:0];
   //---------------------------
   // Always block for reads
   //---------------------------
- //` always_comb begin
-  always @(posedge R_EN or negedge RST_n) begin 
+  //always_comb begin
+  //always @(posedge CON_CLK or negedge RST_n) begin
+  //always @(posedge R_EN or negedge RST_n) begin 
+  always @(posedge read or negedge RST_n) begin 
     if (RST_n == 1'b0) begin
       DATA_OUT = 'z;
       rd_ptr = '0;
     end
     else begin
-      if (R_EN && !EMPTY) begin
+      if (read && R_EN && !EMPTY) begin
         DATA_OUT = memory[rd_ptr];
         rd_ptr = (rd_ptr + 1'b1) % P_MEM_DEPTH;
       end 
     end
   end
+
+  //assign DATA_OUT = memory[rd_ptr];
 
   //---------------------------
   // Always block for wrapped control 

@@ -48,6 +48,8 @@ module top;
     .P_MEM_DEPTH(`MEM_DEPTH)
   ) dut (
     // Inputs
+    .PROD_CLK(ccd_if_h.PROD_CLK),
+    .CON_CLK(ccd_if_h.CON_CLK),
     .RST_n(ccd_if_h.RST_n),
     .DATA_IN(ccd_if_h.I_DATA),
     .W_EN(ccd_if_h.O_WR_EN), 

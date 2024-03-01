@@ -25,7 +25,6 @@ class ccd_scoreboard extends uvm_scoreboard;
   task run_phase(uvm_phase phase);
     //phase.raise_objection(this);
 
-    //  
     //phase.drop_objection(this);
   endtask
 
@@ -33,8 +32,14 @@ class ccd_scoreboard extends uvm_scoreboard;
     string msg;
     msg = $sformatf("Scoreboard Received Transaction from Monitor: DATA IN: %0d -- DATA OUT:%0d", $size(txn.data_in), $size(txn.data_out));
     `uvm_info(get_name(), msg, UVM_LOW); 
-
     //TODO: Perform comparison here
+    if (txn.data_in.size() == txn.data_out()) begin
+      for(int i = 0; i < txn.data_in.size(); i++) begin
 
+      end
+    end
+    else begin
+      
+    end
   endfunction 
 endclass

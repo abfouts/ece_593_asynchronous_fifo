@@ -43,7 +43,7 @@ class ccd_driver extends uvm_driver #(ccd_seq_item);
   endtask
 
   // Forks two tasks to hand the rd_en assert and the wr_en with write data
-  task drive(ccd_seq_item seq);
+  task drive_two(ccd_seq_item seq);
     string msg;
 
     vif.RST_n = seq.rst_n;;
@@ -88,102 +88,61 @@ class ccd_driver extends uvm_driver #(ccd_seq_item);
     end
   endtask
 
-  //----------------------------------------------------------------------
-  //  Name: start
-  //
-  //  Description:  Starts a transaction and calls the write / reads
-  //                A thread is kicked off that kicks off two more threads
-  //                The two extra threads, loop through the expected number
-  //                of writes and waits the idle cycles + 1 and the +1
-  //                cycles will write or read when data comes in or goes
-  //                out. Utilizing wait() if the empty or full occurs
-  //----------------------------------------------------------------------
-  task drive_two(ccd_seq_item seq);
-    $display("Transaction Started");
-    fork
-      // Writes
+  task drive(ccd_seq_item seq);
+    string msg;
+
+    vif.RST_n = seq.rst_n;
+    if (seq.rst_n == 1'b1) begin
+      msg = $sformatf("BURST Transaction of: %0d", seq.num_txn);
+      `uvm_info(get_name(), msg, UVM_LOW); 
       fork
-        for(int i = 0; i < seq.num_txn; i++) begin
-          if (seq.rst_n == 1'b0) begin
-            vif.RST_n = seq.rst_n;
-            // Error checking for requirements
-            if (i >= 1024) begin
-              //$error("[DRIVER]: Exceding burst limitations, Actual: %0d -- Expected Max: %0d -- Time:%0t", seq.num_txn, P_MAX
-              $display("TOO LARGE");
-            end
+        fork
+          begin
+            vif.O_WR_EN = 1'b1;
+            for(int i = 0; i < seq.num_txn; i++) begin
+              for(int j = 0; j < seq.wr_idle; j++) begin
+                @(posedge vif.PROD_CLK);
+              end
 
-            // Is the does data exist?
-            // TODO: Verify size
-            if ($size(seq.data_in) < i) begin
-              $error("[DRIVER]: Attempting to write no data, index: %0d -- Time:%0t", i, $time);
-            end
+              // Wait if the device is full
+              while(vif.I_FULL) begin
+                @(posedge vif.PROD_CLK);
+              end
 
-            for(int j = 0; j < seq.wr_idle+1; j++) begin // Idle cylce + 1 is the current cycle to write
+              vif.I_DATA = seq.data_in[i];
               @(posedge vif.PROD_CLK);
             end
-            write(seq.data_in[i]);
-          end else begin
-            // TODO Add infos for reset 
-            vif.RST_n = seq.rst_n;
-            $display("Reset Caught");
-            break;
-          end
-        end
-      join
+            @(posedge vif.PROD_CLK);
+            vif.O_WR_EN = 1'b0;
+            @(posedge vif.PROD_CLK);
 
-      // Reads
-      fork
-        for(int i = 0; i < seq.num_txn; i++) begin
-          if (seq.rst_n == 1'b0) begin
-            vif.RST_n = seq.rst_n;
-            for(int j = 0; j < seq.rd_idle+1; j++) begin // Idle cylce + 1 is the current cycle to read
+          end
+        join
+        fork
+          begin
+            // Sync clk and rd en
+            vif.O_RD_EN = 1'b1;
+            for(int i = 0; i < seq.num_txn; i++) begin
+              for(int j = 0; j < seq.rd_idle; j++) begin
+                @(posedge vif.CON_CLK);
+              end
+              while(vif.I_EMPTY == 1'b1) begin
+                @(posedge vif.CON_CLK);
+              end
+              
               @(posedge vif.CON_CLK);
             end
-            read();
-          end else begin
-            // TODO Add infos for reset 
-            vif.RST_n = seq.rst_n;
-            break;
+
+            @(posedge vif.CON_CLK);
+            vif.O_RD_EN = 1'b0;
+            @(posedge vif.CON_CLK);
           end
-        end
+        join
       join
-    join
-
-    $display("Transaction Completed");
-  endtask
-
-  //----------------------------------------------------------------------
-  //  Name: write
-  //
-  //  Description: writes to the FIFO
-  //----------------------------------------------------------------------
-  task write(logic [7:0] data);
-    $display("[DRIVER]: Writing data 0x%0x", data);
-
-    // Interfacing Actions
-    vif.I_DATA = data;
-
-    // Wait if the device is full
-    wait(vif.I_FULL == 1'b0);
-    vif.O_WR_EN = 1'b1;
-
-    // Strobing WR EN
-    @(negedge vif.PROD_CLK);
-    vif.O_WR_EN = 1'b0;
-  endtask
-  //----------------------------------------------------------------------
-  //  Name: Read
-  //
-  //  Description: reads from the FIFO
-  //----------------------------------------------------------------------
-  task read();
-    // Wait if the device is full
-    wait(vif.I_EMPTY == 1'b0);
-    vif.O_RD_EN = 1'b1;
-
-    // Strobing RD EN
-    @(negedge vif.CON_CLK);
-    vif.O_RD_EN = 1'b0;
+    end
+    else begin
+      `uvm_info(get_name(), "Reset caught, not transmitting any data", UVM_LOW); 
+    end
   endtask
 
 

@@ -13,7 +13,6 @@ class ccd_test extends uvm_test;
 
   `uvm_component_registry(ccd_test, "ccd_test");
 
-  //virtual ccd_if vif;
   ccd_env ccd_env_h;
   ccd_config ccd_config_h;
   ccd_base_sequence reset_seq;
@@ -21,19 +20,12 @@ class ccd_test extends uvm_test;
 
   function new(string name, uvm_component parent);
     super.new(name, parent);
-    //if (!uvm_config_db #(virtual ccd_if)::get(null, "*", "vif", vif)) begin
-    //  `uvm_fatal(get_name(), "Could not get vif from uvm_config_db", UVM_ERROR);
-    //end
   endfunction
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     ccd_env_h = ccd_env::type_id::create("ccd_env_h", this);
     ccd_config_h = ccd_config::type_id::create("ccd_config_h", this);
-  
-  //uvm_config_db #(virtual ccd_config)::set(null, "*", "ccd_config_h", ccd_config_h);
-
-    //ccd_env_h.ccd_config_h = ccd_config_h;
   endfunction
 
   task run_phase(uvm_phase phase);
@@ -47,17 +39,17 @@ class ccd_test extends uvm_test;
     repeat (10) begin
       rand_seq = ccd_rand_sequence::type_id::create("rand_seq", this);
       rand_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
-      #100ns;
+      //#100ns;
     end
 
     reset_seq = ccd_base_sequence::type_id::create("reset_seq", this);
     reset_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
-    #100ns;
+    //#100ns;
 
     repeat (10) begin
       rand_seq = ccd_rand_sequence::type_id::create("rand_seq", this);
       rand_seq.start(ccd_env_h.ccd_agent_h.ccd_sequencer_h);
-      #100ns;
+      //#100ns;
     end
 
 

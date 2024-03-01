@@ -1,14 +1,7 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/RST_n
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/PROD_CLK
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/CON_CLK
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/O_DATA
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/I_DATA
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/O_WR_EN
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/O_RD_EN
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/I_FULL
-add wave -noupdate -expand -group CCD_IF_TB /top/ccd_inst_if/I_EMPTY
+add wave -noupdate -expand -group ASYNC_FIFO /top/dut/PROD_CLK
+add wave -noupdate -expand -group ASYNC_FIFO /top/dut/CON_CLK
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/RST_n
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/DATA_IN
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/W_EN
@@ -16,8 +9,12 @@ add wave -noupdate -expand -group ASYNC_FIFO /top/dut/R_EN
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/DATA_OUT
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/FULL
 add wave -noupdate -expand -group ASYNC_FIFO /top/dut/EMPTY
-
-WaveRestoreCursors {{Cursor 1} {9061608 ps} 0}
+add wave -noupdate /top/dut/write
+add wave -noupdate /top/dut/read
+add wave -noupdate -radix decimal /top/dut/wr_ptr
+add wave -noupdate -radix decimal /top/dut/rd_ptr
+TreeUpdate [SetDefaultTree]
+WaveRestoreCursors {{Cursor 1} {2163762 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -33,4 +30,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {8983181 ps} {9204065 ps}
+WaveRestoreZoom {58899 ps} {186722 ps}
