@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
-//  Module:         sim_async_fifo_tb.sv
-//  Description:    Test bench for the asynchronous fifo DUT and model
+//  Module:         ccd_test.svh
+//  Description:    UVM test for the asynchronous fifo 
 //
 //  Authors:        Abram Fouts, Yunus Syed
 //  Date:           02/21/2024
@@ -16,9 +16,20 @@ class ccd_test extends uvm_test;
   ccd_base_sequence reset_seq;
   ccd_rand_sequence rand_seq;
 
+  protected int compare_fd;
+
   function new(string name, uvm_component parent);
     super.new(name, parent);
   endfunction
+
+  function void start_of_simulation_phase(uvm_phase phase);
+    compare_fd = $fopen("ccd_tag_log.log", "w"); 
+
+    assert(compare_fd);
+    ccd_env_h.scoreboard_h.set_report_severity_action_hier(UVM_INFO, UVM_DISPLAY | UVM_LOG);
+    ccd_env_h.scoreboard_h.set_report_severity_file_hier(UVM_INFO, compare_fd);
+  endfunction
+
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
@@ -47,7 +58,10 @@ class ccd_test extends uvm_test;
 
 
     #100ns;
-    $stop; 
     phase.drop_objection(this);
   endtask
+
+  function void final_phase(uvm_phase phase);
+    $fclose(compare_fd); 
+  endfunction
 endclass
