@@ -70,6 +70,81 @@ class ccd_base_sequence extends uvm_sequence #(ccd_seq_item);
 endclass
 
 //////////////////////////////////////////////////
+// RANDOM MAX DATA TEST
+//////////////////////////////////////////////////
+class ccd_max_data_seq extends ccd_base_sequence;
+  `uvm_object_utils(ccd_max_data_seq);
+
+  ccd_seq_item max_data_seq;
+
+  function new(string name = "max_data_sequence");
+    super.new(name);
+    max_data_seq = ccd_seq_item::type_id::create("max_data_seq");
+  endfunction
+
+  virtual task body();
+    string msg;
+    msg = $sformatf("Max Data sequence generated");
+    `uvm_info(get_name(), msg, UVM_LOW);
+
+    start_item(max_data_seq);
+
+    void'(max_data_seq.randomize());
+    max_data_seq.rst_n = 1'b1;
+    max_data_seq.num_txn.rand_mode(0);
+
+    if (max_data_seq.rand_num == '1) begin
+      max_data_seq.num_txn = 1024;
+    end
+
+    max_data_seq.data_in = new[max_data_seq.num_txn];
+
+    for (int i = 0; i < max_data_seq.num_txn; i++) begin
+      max_data_seq.data_in[i] = 8'hFF;
+    end
+
+    finish_item(max_data_seq);
+  endtask
+endclass
+//////////////////////////////////////////////////
+// RANDOM MIN DATA TEST
+//////////////////////////////////////////////////
+class ccd_zero_data_seq extends ccd_base_sequence;
+  `uvm_object_utils(ccd_zero_data_seq);
+
+  ccd_seq_item min_data_seq;
+
+  function new(string name = "min_data_seq");
+    super.new(name);
+    min_data_seq = ccd_seq_item::type_id::create("min_data_seq");
+  endfunction
+
+  virtual task body();
+    string msg;
+    msg = $sformatf("Min Data sequence generated");
+    `uvm_info(get_name(), msg, UVM_LOW);
+
+    start_item(min_data_seq);
+
+    void'(min_data_seq.randomize());
+    min_data_seq.rst_n = 1'b1;
+    min_data_seq.num_txn.rand_mode(0);
+
+    if (min_data_seq.rand_num == '1) begin
+      min_data_seq.num_txn = 1024;
+    end
+
+    min_data_seq.data_in = new[min_data_seq.num_txn];
+
+    for (int i = 0; i < min_data_seq.num_txn; i++) begin
+      min_data_seq.data_in[i] = 8'h00;
+    end
+
+    finish_item(min_data_seq);
+  endtask
+endclass
+
+//////////////////////////////////////////////////
 // RANDOM SEQUENCE TEST
 //////////////////////////////////////////////////
 class ccd_rand_sequence extends ccd_base_sequence;
