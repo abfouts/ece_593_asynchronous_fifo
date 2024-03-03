@@ -32,16 +32,6 @@ class ccd_seq_item extends uvm_sequence_item;
     super.new(name);
   endfunction
   
-  //virtual function void do_copy(uvm_object obj);
-  //  ccd_seq_item obj_item;
-  //  if(!$cast(obj_item, obj) begin
-  //    `uvm_fatal("ccd_seq_item", "failed to cast copy");
-  //  end
-  //  super.do_copy(obj);
-  //
-  //
-  //  //TODO: Code Here
-  //endfunction 
 endclass
 
 //////////////////////////////////////////////////
@@ -72,8 +62,8 @@ endclass
 //////////////////////////////////////////////////
 // RANDOM MAX DATA TEST
 //////////////////////////////////////////////////
-class ccd_max_data_seq extends ccd_base_sequence;
-  `uvm_object_utils(ccd_max_data_seq);
+class ccd_max_data_sequence extends ccd_base_sequence;
+  `uvm_object_utils(ccd_max_data_sequence);
 
   ccd_seq_item max_data_seq;
 
@@ -109,12 +99,12 @@ endclass
 //////////////////////////////////////////////////
 // RANDOM MIN DATA TEST
 //////////////////////////////////////////////////
-class ccd_zero_data_seq extends ccd_base_sequence;
-  `uvm_object_utils(ccd_zero_data_seq);
+class ccd_zero_data_sequence extends ccd_base_sequence;
+  `uvm_object_utils(ccd_zero_data_sequence);
 
   ccd_seq_item min_data_seq;
 
-  function new(string name = "min_data_seq");
+  function new(string name = "min_data_sequence");
     super.new(name);
     min_data_seq = ccd_seq_item::type_id::create("min_data_seq");
   endfunction

@@ -13,11 +13,13 @@ class ccd_agent extends uvm_agent;
  
   uvm_analysis_port #(ccd_seq_item) ap;
 
+  virtual ccd_if vif;
+
   ccd_driver    ccd_driver_h;
   ccd_monitor   ccd_monitor_h;
   ccd_sequencer ccd_sequencer_h;
   ccd_config    ccd_config_h;
-  virtual ccd_if vif;
+  ccd_coverage  ccd_coverage_h;
 
   function new(string name="ccd_agent", uvm_component parent = null);
     super.new(name, parent);
@@ -46,6 +48,9 @@ class ccd_agent extends uvm_agent;
 
     ccd_monitor_h = ccd_monitor::type_id::create("ccd_monitor_h",this);
     ccd_monitor_h.vif = vif;
+
+    ccd_coverage_h = ccd_coverage::type_id::create("ccd_coverage_h", this);
+    ccd_coverage_h.vif = vif;
   endfunction
 
   virtual function void connect_phase(uvm_phase phase);
@@ -54,6 +59,7 @@ class ccd_agent extends uvm_agent;
     end
 
     ccd_monitor_h.ap.connect(ap);
+    ccd_monitor_h.ap.connect(ccd_coverage_h.analysis_export);
   endfunction  
 
 endclass

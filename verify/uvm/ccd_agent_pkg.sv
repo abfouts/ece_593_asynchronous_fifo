@@ -16,5 +16,6 @@ package ccd_agent_pkg;
   `include "ccd_monitor.svh"
   `include "ccd_driver.svh"
   `include "ccd_sequencer.svh"
+  `include "ccd_coverage.svh"
   `include "ccd_agent.svh"
 endpackage

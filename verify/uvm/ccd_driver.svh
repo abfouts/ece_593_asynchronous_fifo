@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 //  Module:         ccd_driver.svh
-//  Description:    Test bench for the asynchronous fifo DUT and model
+//  Description:    Driver for the asynchronous FIFO model 
 //
 //  Authors:        Abram Fouts, Yunus Syed
 //  Date:           02/21/2024
@@ -34,8 +34,6 @@ class ccd_driver extends uvm_driver #(ccd_seq_item);
 
   task drive(ccd_seq_item seq);
     string msg;
-    int wr_clk_cnt = 0;
-    int rd_clk_cnt = 0;
     bit write = 0;
     bit read = 0;
 
@@ -94,7 +92,17 @@ class ccd_driver extends uvm_driver #(ccd_seq_item);
       join
     end
     else begin
-      `uvm_info(get_name(), "Reset caught, not transmitting any data", UVM_LOW); 
+      if (vif.O_WR_EN || vif.O_RD_EN) begin
+        `uvm_info(get_name(), "Reset caught during transaction: Holding reset asserted until txn until WR/RD enable are deasserted", UVM_LOW); 
+        fork
+          wait(vif.O_WR_EN == 1'b0);
+          wait(vif.O_RD_EN == 1'b0);
+        join
+        `uvm_info(get_name(), "Reset completed", UVM_LOW); 
+      end
+      else begin
+        `uvm_info(get_name(), "Reset caught during no transaction: not transmitting any data", UVM_LOW); 
+      end
     end
   endtask
 

@@ -1,8 +1,8 @@
 # File list for RTL and Simulation
 
 # RTL
-+incdir+../src/
-../src/async_fifo.sv
+#+incdir+../src/
+#../src/async_fifo.sv
 
 #../src/design.sv  
 #../src/FIFO_mem.sv  

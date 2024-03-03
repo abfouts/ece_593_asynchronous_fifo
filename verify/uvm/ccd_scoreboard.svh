@@ -66,7 +66,7 @@ class ccd_scoreboard extends uvm_scoreboard;
           data_compare_idx++;
           msg = $sformatf( {"\nDescription: Comparing individual elements written and read from the Asynchronous FIFO (CCD)",
                             "\nTEST TAG: TT_01",
-                            "\nDATA IN: %0x -- DATA OUT: %0x",
+                            "\nDATA IN: 0x%0x -- DATA OUT: 0x%0x",
                             "\nResult: PASS",
                             "\nCount: %0d\n"}, (txn.data_in[i]), (txn.data_out[i]), data_compare_idx);
           if(data_compare_idx <= compare_limit) begin
@@ -79,7 +79,7 @@ class ccd_scoreboard extends uvm_scoreboard;
           data_compare_idx++;
           msg = $sformatf( {"\nDescription: Comparing individual elements written and read from the Asynchronous FIFO (CCD)",
                             "\nTEST TAG: TT_01",
-                            "\nDATA IN: %0x -- DATA OUT: %0x",
+                            "\nDATA IN: 0x%0x -- DATA OUT: 0x%0x",
                             "\nResult: FAIL",
                             "\nCount: %0d\n"}, (txn.data_in[i]), (txn.data_out[i]), data_compare_idx);
           `uvm_info(get_type_name(), msg, UVM_MEDIUM);
@@ -104,29 +104,7 @@ class ccd_scoreboard extends uvm_scoreboard;
   endfunction 
 
 
-  function void final_phase(uvm_phase phase);
-    if (failures == 0) begin
-      $display("\n ######## ########  ######  ########    ########     ###     ######   ######  ");
-      $display("    ##    ##       ##    ##    ##       ##     ##   ## ##   ##    ## ##    ## ");
-      $display("    ##    ##       ##          ##       ##     ##  ##   ##  ##       ##       ");
-      $display("    ##    ######    ######     ##       ########  ##     ##  ######   ######  ");
-      $display("    ##    ##             ##    ##       ##        #########       ##       ## ");
-      $display("    ##    ##       ##    ##    ##       ##        ##     ## ##    ## ##    ## ");
-      $display("    ##    ########  ######     ##       ##        ##     ##  ######   ######");
-      $display("");
-      $display("Test Pass with %0d Failures and %0d Passes", failures, passes);
-    end     
-    else begin
-      $display("\n ######## ########  ######  ########    ########    ###    #### ##       ");
-      $display("    ##    ##       ##    ##    ##       ##         ## ##    ##  ##       ");
-      $display("    ##    ##       ##          ##       ##        ##   ##   ##  ##       ");
-      $display("    ##    ######    ######     ##       ######   ##     ##  ##  ##       ");
-      $display("    ##    ##             ##    ##       ##       #########  ##  ##       ");
-      $display("    ##    ##       ##    ##    ##       ##       ##     ##  ##  ##       ");
-      $display("    ##    ########  ######     ##       ##       ##     ## #### ########");
-      $display("");
-      $display("Test Pass with %0d Failures and %0d Passes", failures, passes);
-    end                                             
-                                                           
-  endfunction
+  //function void final_phase(uvm_phase phase);
+  //                                                         
+  //endfunction
 endclass
