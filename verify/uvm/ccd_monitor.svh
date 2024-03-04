@@ -71,21 +71,6 @@ class ccd_monitor extends uvm_monitor;
             end while(!write);
           end while(vif.O_WR_EN);
 
-          //while (vif.O_WR_EN && vif.RST_n) begin
-          //  repeat(2) begin
-          //    @(posedge vif.PROD_CLK);
-          //  end
-          //  //while(vif.I_FULL && vif.O_RD_EN) begin
-          //  //  @(posedge vif.PROD_CLK);
-          //  //end
-          //  @(posedge vif.PROD_CLK);
-          //  //#1ns; // Stabalizations
-          //  if (vif.O_WR_EN && !vif.I_FULL) begin
-          //    seq.data_in = new[seq.data_in.size() + 1] (seq.data_in);  // Increase dynamic vector
-          //    seq.data_in[wr_cntr] = vif.I_DATA;  
-          //    wr_cntr++;
-          //  end
-          //end
         end
         begin
           wait(vif.O_RD_EN);
@@ -106,22 +91,6 @@ class ccd_monitor extends uvm_monitor;
               end
             end while(!read);
           end while (vif.O_RD_EN);
-          //while (vif.O_RD_EN && vif.RST_n) begin
-          //  repeat(1) begin
-          //    @(posedge vif.CON_CLK);
-          //  end
-          //  //while(vif.I_EMPTY && vif.O_WR_EN) begin
-          //  //  @(posedge vif.CON_CLK);
-          //  //end
-          //  @(posedge vif.CON_CLK);
-          //  //#1ns; //Let data stabalize
-          //  // Just in case it is deasserted mid txn
-          //  if(vif.O_RD_EN && !vif.I_EMPTY) begin
-          //    seq.data_out = new[seq.data_out.size() + 1] (seq.data_out);  // Increase dynamic vector
-          //    seq.data_out[rd_cntr] = vif.O_DATA;  
-          //    rd_cntr++;
-          //  end
-          //end
         end
       join
 

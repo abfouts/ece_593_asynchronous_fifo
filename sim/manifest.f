@@ -1,20 +1,13 @@
-# File list for RTL and Simulation
-
-# RTL
-#+incdir+../src/
-#../src/async_fifo.sv
-
-#../src/design.sv  
-#../src/FIFO_mem.sv  
-#../src/R_PTR_handler.sv
-#../src/synchronizer.sv
-#../src/W_PTR_handler.sv
-
+# File list for Simulation
 # Sim
 +incdir+../verify/
 ../verify/ccd_if.sv
-##../verify/sim_ccd.sv
-##../verify/sim_async_fifo_tb.sv
+
+#OOP portion of the project
+##../verify/oop/sim_ccd.sv
+##../verify/oop/sim_async_fifo_tb.sv
+
+#UVM portion of the project
 ../verify/uvm/ccd_agent_pkg.sv
 ../verify/uvm/top.sv
 
