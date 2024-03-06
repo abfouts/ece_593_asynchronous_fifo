@@ -3,6 +3,7 @@
 +incdir+../verify/
 ../verify/ccd_if.sv
 
+#Uncomment this for OOP and comment out UVM
 #OOP portion of the project
 ##../verify/oop/sim_ccd.sv
 ##../verify/oop/sim_async_fifo_tb.sv

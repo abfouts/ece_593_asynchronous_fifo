@@ -28,7 +28,7 @@ class ccd_test extends uvm_test;
     compare_fd = $fopen("ccd_tag_log.log", "w"); 
 
     assert(compare_fd);
-    ccd_env_h.scoreboard_h.set_report_severity_action_hier(UVM_INFO, UVM_DISPLAY | UVM_LOG);
+    ccd_env_h.scoreboard_h.set_report_severity_action_hier(UVM_INFO, UVM_LOG);
     ccd_env_h.scoreboard_h.set_report_severity_file_hier(UVM_INFO, compare_fd);
   endfunction
 
