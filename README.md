@@ -12,3 +12,5 @@ contain all of the simulation files. This allows the dirctory to be clean.
 
 Make will delete work/, run vlib work which recreates the work directory, then it will compile the RTL / simulation files
 and it will run a vsim command after that.
+
+# This guy's a phony, a big fat phony!
